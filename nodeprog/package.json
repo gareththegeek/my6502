@@ -1,0 +1,21 @@
+{
+  "name": "nodeprog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "readline": "^1.3.0",
+    "serialport": "^9.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.12",
+    "@types/serialport": "^8.0.2",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
+  }
+}
