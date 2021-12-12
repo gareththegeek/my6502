@@ -153,7 +153,7 @@ const sleep = async (delayms: number): Promise<void> => {
         console.log(`${Math.floor((pos / stats.size) * 100)}%`)
         const chunk = bindata.slice(pos, Math.min(pos + CHUNK_SIZE, stats.size))
         await write(port, chunk)
-        await sleep(10) // Wait for ROM write cycle
+        await sleep(30) // Wait for ROM write cycle
         pos += CHUNK_SIZE
     }
 

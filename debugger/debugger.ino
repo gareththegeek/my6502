@@ -43,9 +43,6 @@ void switch_prog_eeprom() {
   digitalWrite(SHIFT_LATCH, HIGH);
   digitalWrite(EEPROM_WE, HIGH);
   digitalWrite(CLK, LOW);
-  // for (int i = DATA0; i <= DATA7; i++) {
-  //   pinMode(i, OUTPUT);
-  // }
   setDataBusMode(OUTPUT);
 
   prog_state = PS_NONE;
@@ -140,6 +137,7 @@ void writeEEPROM(int address, byte data) {
     enableWrite();
     delayMicroseconds(1);
     disableWrite();
+    delayMicroseconds(1);
 }
 
 // Set an address and data value and toggle the write control.  This is used
@@ -218,8 +216,10 @@ void program() {
     writeEEPROM(pos, b);
     pos += 1;
   }
-  prog_state = PS_DONE;
   waitWriteCycle(); // Allow final write cycle to complete
+  setAddress(pos, false);
+  enableSoftwareWriteProtect();
+  prog_state = PS_DONE;
 }
 
 void prog_eeprom_loop() {
