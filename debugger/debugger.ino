@@ -43,15 +43,17 @@ void switch_prog_eeprom() {
   digitalWrite(SHIFT_LATCH, HIGH);
   digitalWrite(EEPROM_WE, HIGH);
   digitalWrite(CLK, LOW);
-  for (int i = DATA0; i <= DATA7; i++) {
-    pinMode(i, OUTPUT);
-  }
+  // for (int i = DATA0; i <= DATA7; i++) {
+  //   pinMode(i, OUTPUT);
+  // }
+  setDataBusMode(OUTPUT);
 
   prog_state = PS_NONE;
 }
 
 void enableWrite()      { digitalWrite(EEPROM_WE, LOW);}
 void disableWrite()     { digitalWrite(EEPROM_WE, HIGH);}
+void waitWriteCycle()   { delay(10); }
 
 // Output the address bits and outputEnable signal using shift registers.
 void setAddress(int addr, bool outputEnable) {
@@ -138,20 +140,6 @@ void writeEEPROM(int address, byte data) {
     enableWrite();
     delayMicroseconds(1);
     disableWrite();
-    delay(10);
-}
-
-void beginFastWriteEEPROM() {
-  setDataBusMode(OUTPUT);
-}
-
-void fastWriteEEPROM(int address, byte data) {
-    setAddress(address, /*outputEnable*/ false);
-    writeDataBus(data);
-    enableWrite();
-    delayMicroseconds(1);
-    disableWrite();
-    delayMicroseconds(1);
 }
 
 // Set an address and data value and toggle the write control.  This is used
@@ -181,7 +169,7 @@ void disableSoftwareWriteProtect() {
     setByte(0x20, 0x5555);
 
     setDataBusMode(INPUT);
-    delay(10);
+    waitWriteCycle();
 }
 
 // Write the special three-byte code to turn on Software Data Protection.
@@ -194,7 +182,7 @@ void enableSoftwareWriteProtect() {
     setByte(0xa0, 0x5555);
 
     setDataBusMode(INPUT);
-    delay(10);
+    waitWriteCycle();
 }
 
 word rom_size;
@@ -211,25 +199,27 @@ bool waitSerial() {
 }
 
 void program() {
-  //Serial.print("\nDisabling EEPROM Software Data Protection(SDP)...");
+  
   disableSoftwareWriteProtect();
-  //Serial.println(" done\n");
-
-  beginFastWriteEEPROM();
 
   word pos = rom_org;
   while(pos < rom_org + rom_size) {
     if (!waitSerial()) { prog_state = PS_NONE; return; }
     byte b = Serial.read();
+
+    if (pos % 0x40 == 0) {
+      waitWriteCycle(); // Crossing 28c256 page boundary, must wait 10ms for write cycle to complete
+    }
     
     #ifdef DEBUG_PRINT_ROM_END
       rom_debug[pos % 600] = b;
     #endif
     
-    fastWriteEEPROM(pos, b);
+    writeEEPROM(pos, b);
     pos += 1;
   }
   prog_state = PS_DONE;
+  waitWriteCycle(); // Allow final write cycle to complete
 }
 
 void prog_eeprom_loop() {
@@ -335,7 +325,7 @@ void clk_loop() {
 //TODO This function is for testing purposes only
 // Read the first 256 byte block of the EEPROM and dump it to the serial monitor.
 void printContents() {
-    for (int base = 0; (base < 256); base += 16) {
+    for (int base = 0x9000; (base < 0x9000+256); base += 16) {
         byte data[16];
         for (int offset = 0; offset <= 15; offset += 1) {
             data[offset] = readEEPROM(base + offset);
@@ -369,13 +359,12 @@ void setup() {
   pinMode(PROG_EEPROM, INPUT);
   pinMode(STEP_CLK, INPUT);
 
-  for (int i = DATA0; i <= DATA7; i++) {
-    digitalWrite(i, LOW);
-  }
   setAddress(0x0000, true);
 
   Serial.begin(115200);
   Serial.println("Gareth's 6502 utility woop woop!");
+
+  printContents();
 }
 
 // DEBUGGER ////////////////////////////////////////////////////////////////////
@@ -390,9 +379,7 @@ void switch_debugger() {
   digitalWrite(SHIFT_LATCH, HIGH);
   digitalWrite(EEPROM_WE, HIGH);
   digitalWrite(CLK, LOW);
-  for (int i = DATA0; i <= DATA7; i++) {
-    pinMode(i, INPUT);
-  }
+  setDataBusMode(INPUT);
 }
 
 byte readData() {

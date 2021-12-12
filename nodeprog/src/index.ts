@@ -23,7 +23,7 @@ const validPath = async (input: string): Promise<boolean> => {
 }
 
 const validOrg = (input: string) => {
-    const org = parseInt(input)
+    const org = parseInt(input, 16)
     if (isNaN(org)) {
         return false
     }
@@ -83,7 +83,7 @@ const parseParams = async (info: PortInfo[]) => {
         j = await question('?')
     }
 
-    const org = parseInt(j)
+    const org = parseInt(j, 16)
     console.log(`Origin ${org}`)
 
     return {
@@ -147,13 +147,13 @@ const sleep = async (delayms: number): Promise<void> => {
     console.log('Writing file')
     const bindata = await fs.readFile(binpath)
 
-    const CHUNK_SIZE = 0x20
+    const CHUNK_SIZE = 0x40 // Chunk size matches 28c256 page size
     let pos = 0
     while (pos < stats.size) {
         console.log(`${Math.floor((pos / stats.size) * 100)}%`)
         const chunk = bindata.slice(pos, Math.min(pos + CHUNK_SIZE, stats.size))
         await write(port, chunk)
-        await sleep(1) // if delay(10) is required on arduino (doubtful) then this must be 350
+        await sleep(10) // Wait for ROM write cycle
         pos += CHUNK_SIZE
     }
 
