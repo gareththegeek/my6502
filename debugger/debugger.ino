@@ -42,7 +42,7 @@ void switch_prog_eeprom() {
   digitalWrite(SHIFT_CLK, LOW);
   digitalWrite(SHIFT_LATCH, HIGH);
   digitalWrite(EEPROM_WE, HIGH);
-  digitalWrite(CLK, LOW);
+  digitalWrite(CLK, HIGH);
   setDataBusMode(OUTPUT);
 
   prog_state = PS_NONE;
@@ -201,7 +201,15 @@ void program() {
   disableSoftwareWriteProtect();
 
   word pos = rom_org;
-  while(pos < rom_org + rom_size) {
+  // Watch out for overflow 0xff00 + 0x0100 == 0 so
+  //   pos < rom_org + rom_size
+  //   pos < 0xff00 + 0x100
+  //   pos < 0
+  // will fail to execute, hence we have to do
+  //   pos <= rom_org + (rom_size - 1)
+  //   pos <= 0xff00 + 0xff
+  //   pos <= 0xffff
+  while(pos <= rom_org + (rom_size - 1)) {
     if (!waitSerial()) { prog_state = PS_NONE; return; }
     byte b = Serial.read();
 
@@ -260,14 +268,20 @@ unsigned long lastClk = millis();
 unsigned long clk_rate = 1000;
 bool run_clk = true;
 unsigned long run_clk_debounce = 0;
-bool clk_state = false;
 bool step_pressed = false;
 bool clk_rising = false;
 
-void set_clk(int value) {
-  clk_rising = (value && !clk_state);
-  clk_state = value;
-  digitalWrite(CLK, clk_state ? HIGH : LOW);
+// void set_clk(int value) {
+//   clk_rising = (value && !clk_state);
+//   clk_state = value;
+//   digitalWrite(CLK, clk_state ? HIGH : LOW);
+// }
+
+void clk_pulse() {
+  digitalWrite(CLK, LOW);
+  delayMicroseconds(1);
+  digitalWrite(CLK, HIGH);
+  clk_rising = true;
 }
 
 char debugstr[80];
@@ -280,8 +294,10 @@ void manual_clk() {
   
   if (next_pressed != step_pressed) {
     run_clk_debounce = next_debounce;
+    if (next_pressed && !step_pressed) {
+      clk_pulse();
+    }
     step_pressed = next_pressed;
-    set_clk(!clk_state);
   
     #ifdef DEBUG_PRINT_ROM_END
     for(int i=0; i<600;i++) {
@@ -300,18 +316,14 @@ void auto_clk() {
   unsigned long now = millis();
   if (now - lastClk > clk_rate) {
     lastClk = now;
-    set_clk(!clk_state);
+    clk_pulse();
   }
 }
 
 void clk_loop() {
   clk_rising = false;
   
-  bool next_run_clk = (digitalRead(RUN_CLK) == HIGH);
-  if (next_run_clk != run_clk) {
-    run_clk = next_run_clk;
-    set_clk(false);
-  }
+  run_clk = (digitalRead(RUN_CLK) == HIGH);
   
   if (!run_clk) {
     manual_clk();
@@ -325,7 +337,10 @@ void clk_loop() {
 //TODO This function is for testing purposes only
 // Read the first 256 byte block of the EEPROM and dump it to the serial monitor.
 void printContents() {
-    for (int base = 0x9000; (base < 0x9000+256); base += 16) {
+    //for (int base = 0xff00; (base < 0xffff); base += 16) {
+    word start = 0xff00;
+    for (int i = 0; i < 16; i++) {
+        word base = start+i*16;
         byte data[16];
         for (int offset = 0; offset <= 15; offset += 1) {
             data[offset] = readEEPROM(base + offset);
@@ -345,7 +360,7 @@ void setup() {
   digitalWrite(SHIFT_LATCH, HIGH);
   digitalWrite(EEPROM_WE, HIGH);
   digitalWrite(RAM_WE, HIGH);
-  digitalWrite(CLK, LOW);
+  digitalWrite(CLK, HIGH);
   
   pinMode(SHIFT_DATA, OUTPUT);
   pinMode(SHIFT_CLK, OUTPUT);
@@ -378,7 +393,7 @@ void switch_debugger() {
   digitalWrite(SHIFT_CLK, LOW);
   digitalWrite(SHIFT_LATCH, HIGH);
   digitalWrite(EEPROM_WE, HIGH);
-  digitalWrite(CLK, LOW);
+  digitalWrite(CLK, HIGH);
   setDataBusMode(INPUT);
 }
 
@@ -430,7 +445,7 @@ void debugger_loop() {
   
   byte data = readData();
   word address = readAddress();
-  byte we = (digitalRead(RAM_WE) == HIGH);
+  byte we = (digitalRead(RAM_WE) == LOW);
 
   sprintf(buffer, "%04x\t%02x\t%s", address, data, we ? "W" : "r");
   Serial.println(buffer);

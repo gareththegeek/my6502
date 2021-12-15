@@ -133,13 +133,13 @@ const sleep = async (delayms: number): Promise<void> => {
     const port = await open(portName)
 
     const stats = await fs.stat(binpath)
-    console.log(`Sending file size ${stats.size}`)
+    console.log(`Sending file size $${stats.size.toString(16)}`)
     const buff = Buffer.alloc(2, 0)
     buff.writeUInt16LE(stats.size)
     await write(port, buff)
     await sleep(10)
 
-    console.log(`Sending origin ${org}`)
+    console.log(`Sending origin $${org.toString(16)}`)
     buff.writeUInt16LE(org)
     await write(port, buff)
     await sleep(10)
@@ -153,6 +153,7 @@ const sleep = async (delayms: number): Promise<void> => {
         console.log(`${Math.floor((pos / stats.size) * 100)}%`)
         const chunk = bindata.slice(pos, Math.min(pos + CHUNK_SIZE, stats.size))
         await write(port, chunk)
+        console.log(`${(org+pos).toString(16)}: ${chunk.toString('hex')}`)
         await sleep(30) // Wait for ROM write cycle
         pos += CHUNK_SIZE
     }
