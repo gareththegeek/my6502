@@ -2,6 +2,8 @@ import SerialPort, { PortInfo, Stream } from 'serialport'
 import { promises as fs, read, stat } from 'fs'
 import readln from 'readline'
 
+console.log(process.argv)
+
 const cl = readln.createInterface(process.stdin, process.stdout)
 const question = (q: string): Promise<string> =>
     new Promise((resolve) => {
@@ -44,6 +46,7 @@ const parseParams = async (info: PortInfo[]) => {
         j = process.argv[2]
     }
 
+    console.log(j)
     if (!validCom(j, info)) {
         console.log('Select COM port')
         info.forEach((i) => console.log(`${i.path}`))
@@ -150,11 +153,10 @@ const sleep = async (delayms: number): Promise<void> => {
     const CHUNK_SIZE = 0x40 // Chunk size matches 28c256 page size
     let pos = 0
     while (pos < stats.size) {
-        console.log(`${Math.floor((pos / stats.size) * 100)}%`)
         const chunk = bindata.slice(pos, Math.min(pos + CHUNK_SIZE, stats.size))
         await write(port, chunk)
-        console.log(`${(org+pos).toString(16)}: ${chunk.toString('hex')}`)
-        await sleep(30) // Wait for ROM write cycle
+        console.log(`${(org+pos).toString(16)}: ${chunk.toString('hex')} | ${Math.floor((pos / stats.size) * 100)}%`)
+        await sleep(100) // Wait for ROM write cycle
         pos += CHUNK_SIZE
     }
 

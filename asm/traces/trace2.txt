@@ -1,0 +1,72 @@
+0000	00	r - reset
+0000	00	r
+00fc	80	r - boot
+80ff	80	r
+80ff	00	r
+0100	61	r
+01ff	a0	r
+01fe	bd	r
+fffc	00	r - reset vector
+fffd	ff	r
+ff00	a2	r - ldx #$ff
+ff01	ff	r
+ff02	9a	r - txs
+ff03	a9	r
+ff03	a9	r - lda #$66
+ff04	66	r
+ff05	48	r - pha
+ff06	48	r
+01ff	66	W
+ff06	48	r - pha
+ff07	48	r
+01fb	66	W
+ff07	48	r - pha
+ff08	48	r
+01f9	66	W
+ff08	48	r - pha
+ff09	48	r
+01f8	66	W
+ff09	48	r - pha
+ff0a	48	r
+01f6	66	W
+ff0a	48	r - pha
+ff0b	ba	r
+01ec	66	W
+ff0b	ba	r - tsx
+ff0c	8a	r
+ff0c	8a	r - txa
+ff0d	48	r
+ff0d	48	r - pha
+ff0e	68	r
+01eb	eb	W
+ff0e	68	r - pla
+ff0f	68	r
+01ea	70	r
+01eb	eb	r
+ff0f	68	r - pla
+ff10	68	r
+01eb	eb	r
+01ec	66	r
+ff10	68	r - pla
+ff11	68	r
+01ec	66	r
+01ed	85	r
+ff11	68	r - pla
+ff12	68	r
+01ed	85	r
+01ee	e8	r
+ff12	68	r - pla
+ff13	68	r
+01ee	e8	r
+01ef	4a	r
+ff13	68	r - pla
+ff14	68	r
+01ef	4a	r
+01f0	ea	r
+ff14	68	r - pla
+ff15	4c	r
+01f0	ea	r
+01f1	89	r
+ff15	4c	r - jmp
+ff16	15	r
+ff17	ff	r

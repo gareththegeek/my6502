@@ -1,0 +1,71 @@
+0001	15	r
+0100	61	r
+00ff	00	r
+00ff	00	r
+00ff	00	r
+0100	61	r
+01ff	a0	r
+01fe	3d	r 
+fffc	00	r
+fffd	ff	r
+ff00	a2	r - ldx #$7f
+ff01	7f	r
+ff02	9a	r - txs
+ff03	a9	r
+ff03	a9	r - lda #$66
+ff04	66	r
+ff05	48	r - pha
+ff06	48	r
+017f	66	W
+ff06	48	r - pha
+ff07	48	r
+017e	66	W
+ff07	48	r - pha
+ff08	48	r
+017d	66	W
+ff08	48	r - pha
+ff09	48	r
+017c	66	W
+ff09	48	r - pha
+ff0a	48	r
+017b	66	W
+ff0a	48	r - pha
+ff0b	48	r
+017a	66	W
+ff0b	48	r - pha
+ff0c	68	r
+0179	66	W
+ff0c	68	r - pla
+ff0d	68	r
+0178	3f	r
+0179	66	r
+ff0d	68	r - pla
+ff0e	68	r
+0179	66	r
+017a	66	r
+ff0e	68	r - pla
+ff0f	68	r
+017a	66	r
+017b	66	r
+ff0f	68	r - pla
+ff10	68	r
+017b	66	r
+017c	66	r
+ff10	68	r - pla
+ff11	68	r
+017c	66	r
+017d	66	r
+ff11	68	r - pla
+ff12	68	r
+017d	66	r
+017e	66	r
+ff12	68	r - pla
+ff13	4c	r
+017e	66	r
+017f	66	r
+ff13	4c	r - jmp
+ff14	13	r
+ff15	ff	r
+ff13	4c	r
+ff14	13	r
+ff15	ff	r

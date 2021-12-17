@@ -1,0 +1,47 @@
+0015	80	r
+0015	80	r
+8000	80	r
+807f	80	r
+807f	80	r
+0100	61	r
+01ff	a0	r
+01fe	3d	r
+fffc	00	r
+fffd	ff	r
+ff00	a2	r - ldx #$fe
+ff01	fe	r
+ff02	9a	r - txs
+ff03	a9	r
+ff03	a9	r - lda #$ea
+ff04	ea	r
+ff05	48	r - pha
+ff06	a9	r
+01fe	ea	W
+ff06	a9	r - lda #$12
+ff07	12	r
+ff08	48	r - pha
+ff09	a9	r
+01fd	12	W
+ff09	a9	r - lda #$00
+ff0a	00	r
+ff0b	68	r - pla
+ff0c	85	r
+01fc	62	r
+01fd	12	r
+ff0c	85	r - sta $00 (zp)
+ff0d	00	r
+0000	12	W
+ff0e	68	r - pla
+ff0f	85	r
+01fd	12	r
+01fe	ea	r
+ff0f	85	r - sta $01 (zp)
+ff10	01	r
+0001	ea	W
+ff11	4c	r - jmp
+ff12	11	r
+ff13	ff	r
+ff11	4c	r
+ff12	11	r
+ff13	ff	r
+ff11	4c	r

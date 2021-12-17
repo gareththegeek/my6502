@@ -1,0 +1,45 @@
+0013	20	r - reset
+0013	20	r - /reset
+2000	95	r - boot 
+9520	ff	r
+ff92	00	r
+ff92	00	r
+0100	61	r
+01ff	a0	r
+01fe	bd	r - /boot
+fffc	00	r - load start address
+fffd	ff	r - /load start address
+ff00	a2	r - ldx #$ff
+ff01	ff	r
+ff02	9a	r - txs
+ff03	a9	r
+ff03	a9	r - lda #$ea
+ff04	ea	r
+ff05	48	r - pha
+ff06	a9	r
+01ff	ea	W 
+ff06	a9	r - lda #$12
+ff07	12	r
+ff08	48	r - pha
+ff09	a9	r
+01ff	12	W   . ??? why is sp still $01ff?
+ff09	a9	r - lda #$00
+ff0a	00	r
+ff0b	68	r - pla
+ff0c	85	r
+01ff	12	r
+0100	61	r   . ??? 61 why is sp $0100?
+ff0c	85	r - sta $00 (zp)
+ff0d	00	r
+0000	61	W
+ff0e	68	r - pla
+ff0f	85	r
+0100	61	r   . ??? $0100 still?
+0101	ed	r - 
+ff0f	85	r - sta $01 (zp)
+ff10	01	r
+0001	ed	W
+ff11	4c	r - jmp $ff11
+ff12	11	r
+ff13	ff	r
+ff11	4c	r - jmp $ff11
