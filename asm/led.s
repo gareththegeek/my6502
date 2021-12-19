@@ -1,4 +1,5 @@
 
+	.include "params.inc"
 	.include "via.inc"
 
 	.export led_init
@@ -9,8 +10,6 @@ RW = %01000000
 RS = %00100000
 
 	.code
-
-msg:	.asciiz "Hello Gareth"
 
 led_command:
 	sta PORTB
@@ -42,8 +41,12 @@ led_init:
 	rts
 
 
+; Print character to LED display
+; Parameters:
+;	x+0: Character to print
 led_char:
-	sta PORTB
+	lda 0,x			; get character from data stack
+	sta PORTB		; and send to led display
 	lda #RS         ; Set RS; Clear RW/E bits
 	sta PORTA
 	lda #(RS | E)   ; Set E bit to send instruction
@@ -54,13 +57,21 @@ led_char:
 	rts
 
 
+; Print string to LED display
+; Parameters:
+;	x+0,x+1: Pointer to null-terminated string
 led_print:
-	ldx #$00
 @loop:
-	lda msg,x
-	beq @end		; exit loop when we reach null character (a == 0)	
-	jsr led_char
-	inx
-	jmp @loop
+	lda (0,x)		; load character using data stack [x, x+1] as pointer to character
+	beq @end		; exit loop when we reach null character (a == 0)
+	
+	dpha			; push a to data stack
+	jsr led_char	; print character
+	dpla			; pop character from data stack
+	
+	inc 0,x			; increment string pointer low byte
+	bne @loop		; check for a carry
+	inc 1,x			; carry therefore increment high byte
+	jmp @loop		;
 @end:
 	rts
