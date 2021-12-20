@@ -20,6 +20,15 @@
 			sta		0,x	        ;
 	.endmacro
 
+	; Push 16bit zero to data stack
+	;
+	.macro	push0
+			dex
+			stz		0,x
+			dex
+			stz		0,x
+	.endmacro
+
 	; Pull 16bit from data stack
 	;
 	.macro	pull

@@ -18,6 +18,9 @@ ASC0toA = ASCA-ASCCOLON
 
 	.code
 
+; Execute LED display command stored in A
+;	( -- )
+;
 .proc led_command
 	sta PORTB
 	lda #0         ; Clear RS/RW/E bits
@@ -30,6 +33,9 @@ ASC0toA = ASCA-ASCCOLON
 .endproc
 
 
+; Initialise LED display
+;	( -- )
+;
 .proc led_init
 	lda #%11111111 ; Set all pins on port B to output
 	sta DDRB
@@ -51,8 +57,8 @@ ASC0toA = ASCA-ASCCOLON
 
 
 ; Print character to LED display
-; Parameters:
-;	x+0: Character to print
+;	( char -- )
+;
 .proc led_print_char
 	char	= 0
 
@@ -71,8 +77,8 @@ ASC0toA = ASCA-ASCCOLON
 
 
 ; Print 8 bit hexadecimal value to LED display
-; Parameters:
-; 	x+0: 8bit value to print
+; 	( value -- )
+;
 .proc led_print_hex
 	value 	= 0
 
@@ -107,8 +113,8 @@ ASC0toA = ASCA-ASCCOLON
 
 
 ; Print string to LED display
-; Parameters:
-;	x+0,x+1: Pointer to null-terminated string
+;	( lpMessage hpMessage -- )
+;
 .proc led_print_str
 	plmsg	= 0
 	phmsg	= 1
