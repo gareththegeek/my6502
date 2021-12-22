@@ -16,26 +16,48 @@ start:
 	
 	jsr led_init	;
 
-	;push msg			; Pass message string pointer via data stack
-	;jsr led_print_str	;
+	
 
-	push $34			; 34
-	jsr led_print_hex	;
+	; push $1234
+	; jsr led_print_hex
 
-	push $2a			; *
-	jsr led_print_char	;
+	; push $20
+	; jsr led_print_char
 
-	push $5b			; 5B
-	jsr led_print_hex	;
+	; ;push msg			; Pass message string pointer via data stack
+	; ;jsr led_print_str	;
 
-	push $3d			; =
-	jsr led_print_char	;
+	; push $12			; 0012
+	; jsr led_print_hex	;
 
-	push $34
-	push $5b
-	jsr mul8
-	jsr led_print_hex	; 12
-	jsr led_print_hex	; 7C
+	; push $2a			; *
+	; jsr led_print_char	;
+
+	; push $56			; 0056
+	; jsr led_print_hex	;
+
+	; push $3d			; =
+	; jsr led_print_char	;
+
+	; push $12
+	; push $56
+	; jsr mul8
+	; jsr led_print_hex	; 060C
+
+	; push $1234
+	; push $5678
+	; jsr mul16
+	; swap2
+	; jsr led_print_hex	; 0626
+	; jsr led_print_hex	; 0060
+
+	; ; Test 16-bit multiply
+	; push $1111
+	; push $2222
+	; jsr mul16
+	; swap2
+	; jsr led_print_hex	; 0246
+	; jsr led_print_hex	; 8642
 
 halt:
 	jmp halt

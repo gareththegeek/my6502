@@ -76,7 +76,7 @@ ASC0toA = ASCA-ASCCOLON
 .endproc
 
 
-; Print 8 bit hexadecimal value to LED display
+; Print 16 bit hexadecimal value to LED display
 ; 	( value -- )
 ;
 .proc led_print_hex
@@ -85,6 +85,7 @@ ASC0toA = ASCA-ASCCOLON
 	.macro asc
 	clc
 	adc		#ASC0		; Ascii '0'
+	clc
 	cmp		#ASCCOLON	; Check if greater than '9'
 	bcc		:+
 	clc
@@ -92,7 +93,11 @@ ASC0toA = ASCA-ASCCOLON
 :
 	.endmacro
 
-	lda		value,x		; Get value to print
+	txa					; Begin with the high byte
+	tay
+	iny
+@loop:
+	lda		value,y		; Get value to print
 	lsr					; Get high nybble
 	lsr
 	lsr
@@ -100,12 +105,19 @@ ASC0toA = ASCA-ASCCOLON
 	asc					; Convert to ascii
 	push				; Pass high nybble ascii
 	jsr	led_print_char	; Print high nybble
-
-	lda		value,x		; Get value to print 
+	
+	lda		value,y		; Get value to print 
 	and		#$0f		; Get low nybble
 	asc					; Convert to ascii
 	push				; Pass low nybble ascii
 	jsr	led_print_char	; Print low nybble
+
+	tya
+	lsr
+	bcc		@end		; if y is odd this is the
+	dey					;	high byte so decrement
+	jmp		@loop		; 	and loop
+@end:
 	
 	pull
 	rts
