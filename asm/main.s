@@ -16,7 +16,21 @@ start:
 	
 	jsr led_init	;
 
-	
+	; push $1234
+	; push $56
+	; jsr div16
+	; jsr led_print_hex	; 0010
+	; push $20
+	; jsr led_print_char	; space
+	; jsr led_print_hex	; 0036
+	; push $20
+	; jsr led_print_char	; space
+	push $37
+	push $12
+	jsr div8
+	jsr led_print_hex	;
+	jsr led_print_hex	;
+
 
 	; push $1234
 	; jsr led_print_hex

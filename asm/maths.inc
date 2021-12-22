@@ -4,5 +4,7 @@
 
     .import mul8
     .import mul16
+    .import div8
+    .import div16
 
     .endif

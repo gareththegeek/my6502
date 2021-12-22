@@ -43,6 +43,13 @@
 			.endif
 	.endmacro
 
+	; Push uninitialised 16-bit
+	;	( -- ? )
+	.macro	pushbss
+			dex
+			dex
+	.endmacro
+
 	; Pull 16-bit from data stack
 	;	( x -- )
 	;
